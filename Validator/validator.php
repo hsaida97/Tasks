@@ -39,13 +39,33 @@ class EmailValidator implements ValidatorInterface
 {
     public function passes($value)
     {
-        $value = trim($value);
-        return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
+        $originalValue = trim($value);
+        return filter_var($originalValue, FILTER_VALIDATE_EMAIL) !== false;
     }
 
     public function messages($field)
     {
         return "It is not a valid email address!";
+    }
+}
+class ConfirmValidator implements ValidatorInterface
+{
+    private $originalValue;
+
+    public function __construct($originalValue)
+    {
+        $this->originalValue = trim($originalValue);
+    }
+
+    public function passes($value)
+    {
+        $value = trim($value);
+        return $this->originalValue === $value;
+    }
+
+    public function messages($field)
+    {
+        return "Does not match!";
     }
 }
 
@@ -201,7 +221,7 @@ class InValidator implements ValidatorInterface
 
     public function messages($field)
     {
-        return strtoupper($field) . " must be one of the following values: " . implode(', ', $this->validValues) . ".";
+        return "Choose one of the following values: " . implode(', ', $this->validValues) . ".";
     }
 }
 
@@ -211,7 +231,6 @@ class Validator
     public static $errors = [];
     public static function make($data, $rules)
     {
-
         $validatorClasses = [
             'required' => RequiredValidator::class,
             'min' => MinValidator::class,
@@ -221,37 +240,45 @@ class Validator
             'integer' => IntegerValidator::class,
             'email' => EmailValidator::class,
             'in' => InValidator::class,
+            'confirm' => ConfirmValidator::class,
         ];
+
         foreach ($rules as $field => $validationRules) {
             foreach ($validationRules as $rule) {
                 $ruleParametrs = explode(':', $rule);
                 $ruleClassName = $ruleParametrs[0];
 
-                if (count($ruleParametrs) > 1) {
+                if (isset($validatorClasses[$ruleClassName])) {
+                    $instance = null;
 
-                    if (in_array($ruleClassName, array_keys($validatorClasses))) {
-                        $ruleClassOption = $ruleParametrs[1];
-                        $instance = (new $validatorClasses[$ruleClassName]($ruleClassOption));
+                    if ($ruleClassName === 'confirm') {
+                        $originalField = str_replace('_confirm', '', $field);
+                        if (!empty($data[$originalField])) {
+                            $instance = new $validatorClasses[$ruleClassName]($data[$originalField]);
+                        } else {
+                            self::$errors[$field][] = "The original field '$originalField' for confirmation is missing or empty.";
+                            continue;
+                        }
+                    } else {
+                        $instance = count($ruleParametrs) > 1
+                            ? new $validatorClasses[$ruleClassName]($ruleParametrs[1])
+                            : new $validatorClasses[$ruleClassName];
                     }
-                } else {
-                    if (in_array($ruleClassName, array_keys($validatorClasses))) {
-                        $instance = (new $validatorClasses[$ruleClassName]);
-                    }
-                }
-                $check = $instance->passes($data[$field]);
 
-                if (!$check) {
-                    if (!isset(self::$errors[$field])) {
+                    $check = $instance->passes($data[$field] ?? null);
+
+                    if (!$check) {
+                        if (!isset(self::$errors[$field])) {
+                            self::$errors[$field] = [];
+                        }
                         self::$errors[$field][] = $instance->messages($field);
-                        self::$errors[$field] = $instance->messages($field);
+                        break;
                     }
                 }
-
             }
-
         }
-    }
 
+    }
 
     public function fails()
     {
@@ -262,3 +289,5 @@ class Validator
         return self::$errors;
     }
 }
+
+
