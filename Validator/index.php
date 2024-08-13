@@ -42,6 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         margin-top: 3rem;
         width: 50%;
     }
+
+    .form-group .form-text {
+        color: red;
+    }
 </style>
 
 <body>
@@ -124,11 +128,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label for="password_confirm">Password Confirm</label>
-                <input type="password_confirm" class="form-control" id="password_confirm" name="password_confirm">
-                <?php if (isset($validator->errors()['password_confirm'])): ?>
-                    <small id="passwordConfirmHelp"
-                        class="form-text text-muted"><?= $validator->errors()['password_confirm'][0]; ?></small>
-                <?php endif; ?>
+                <input type="password" class="form-control" id="password_confirm" name="password_confirm">
+                <?php if (isset($validator) && $validator->fails() && isset($validator->errors()['password_confirm'])) { ?>
+                    <?php foreach ($validator->errors()['password_confirm'] as $error) { ?>
+                        <small class="form-text text-muted"><?php echo $error; ?></small>
+                    <?php } ?>
+                <?php } ?>
             </div>
             <div class="form-group">
                 <label for="gender">Select Gender:</label>
