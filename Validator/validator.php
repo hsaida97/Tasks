@@ -297,7 +297,7 @@ class Validator
                             : new $validatorClasses[$ruleClassName];
                     }
 
-                    $check = $instance->passes($data[$field] ?? '');
+                    $check = $instance->passes($data[$field] ?? NULL);
 
                     if (!$check) {
                         if (!isset(self::$errors[$field])) {

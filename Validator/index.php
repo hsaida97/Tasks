@@ -8,11 +8,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'name' => ['required', 'min:5', 'max:50'],
         'surname' => ['required', 'min:5', 'max:10'],
         'age' => ['required', 'integer'],
-        'email' => ['required', 'email', 'unique:users,email', 'confirm'],
-        'email_confirm' => ['required'],
+        'email' => ['required', 'email', 'unique:users,email'],
+        'email_confirm' => ['required', 'confirm'],
         'username' => ['required', 'exists:users,username'],
-        'password' => ['required', 'min:8', 'confirm'],
-        'password_confirm' => ['required'],
+        'password' => ['required', 'password'],
+        'password_confirm' => ['required', 'confirm'],
         'gender' => ['required', 'in:1,2'],
     ];
 
@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password">
+                <input type="password" class="form-control" id="password" name="password" value="<?php echo isset($_POST['password']) ? htmlspecialchars($_POST['password'], ENT_QUOTES) : ''; ?>">
                 <?php if (isset($validator) && $validator->fails() && isset($validator->errors()['password'])) { ?>
                     <?php foreach ($validator->errors()['password'] as $error) { ?>
                         <small class="form-text text-muted"><?php echo $error; ?></small>
