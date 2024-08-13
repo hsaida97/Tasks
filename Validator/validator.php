@@ -225,6 +225,37 @@ class InValidator implements ValidatorInterface
     }
 }
 
+class PasswordValidator implements ValidatorInterface
+{
+    private $minLength;
+    private $maxLength;
+
+    public function __construct($minLength = 8, $maxLength = 20)
+    {
+        $this->minLength = $minLength;
+        $this->maxLength = $maxLength;
+    }
+
+    public function passes($value)
+    {
+        $value = trim($value);
+
+        return !(
+            strlen($value) < $this->minLength ||
+            strlen($value) > $this->maxLength ||
+            !preg_match('/[A-Z]/', $value) ||
+            !preg_match('/\d/', $value) ||
+            !preg_match('/[\W_]/', $value)
+        );
+    }
+
+    public function messages($field)
+    {
+        return "The password does not meet the required criteria.";
+    }
+}
+
+
 class Validator
 {
 
@@ -241,6 +272,7 @@ class Validator
             'email' => EmailValidator::class,
             'in' => InValidator::class,
             'confirm' => ConfirmValidator::class,
+            'password' => PasswordValidator::class,
         ];
 
         foreach ($rules as $field => $validationRules) {
@@ -265,7 +297,7 @@ class Validator
                             : new $validatorClasses[$ruleClassName];
                     }
 
-                    $check = $instance->passes($data[$field] ?? null);
+                    $check = $instance->passes($data[$field] ?? '');
 
                     if (!$check) {
                         if (!isset(self::$errors[$field])) {

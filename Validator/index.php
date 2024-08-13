@@ -9,8 +9,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'surname' => ['required', 'min:5', 'max:10'],
         'age' => ['required', 'integer'],
         'email' => ['required', 'email', 'unique:users,email', 'confirm'],
-        'email_confirm' => ['required', 'email'],
+        'email_confirm' => ['required'],
         'username' => ['required', 'exists:users,username'],
+        'password' => ['required', 'min:8', 'confirm'],
+        'password_confirm' => ['required'],
         'gender' => ['required', 'in:1,2'],
     ];
 
@@ -47,7 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="post" action="">
             <div class="form-group mt-5">
                 <label for="name">Name</label>
-                <input type="text" class="form-control" id="name" value="" name="name" aria-describedby="name">
+                <input type="text" class="form-control" id="name"
+                    value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name'], ENT_QUOTES) : ''; ?>"
+                    name="name" aria-describedby="name">
                 <?php if (isset($validator) && $validator->fails() && isset($validator->errors()['name'])) { ?>
                     <?php foreach ($validator->errors()['name'] as $error) { ?>
                         <small class="form-text text-muted"><?php echo $error; ?></small>
@@ -56,7 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label for="surname">Last Name</label>
-                <input type="text" class="form-control" id="surname" name="surname" aria-describedby="surname">
+                <input type="text" class="form-control" id="surname" name="surname"
+                    value="<?php echo isset($_POST['surname']) ? htmlspecialchars($_POST['surname'], ENT_QUOTES) : ''; ?>"
+                    aria-describedby="surname">
                 <?php if (isset($validator) && $validator->fails() && isset($validator->errors()['surname'])) { ?>
                     <?php foreach ($validator->errors()['surname'] as $error) { ?>
                         <small class="form-text text-muted"><?php echo $error; ?></small>
@@ -65,7 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" aria-describedby="username">
+                <input type="text" class="form-control" id="username" name="username"
+                    value="<?php echo isset($_POST['username']) ? htmlspecialchars($_POST['username'], ENT_QUOTES) : ''; ?>"
+                    aria-describedby="username">
                 <?php if (isset($validator) && $validator->fails() && isset($validator->errors()['username'])) { ?>
                     <?php foreach ($validator->errors()['username'] as $error) { ?>
                         <small class="form-text text-muted"><?php echo $error; ?></small>
@@ -74,7 +82,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="text" class="form-control" id="email" name="email" aria-describedby="email">
+                <input type="text" class="form-control" id="email" name="email"
+                    value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email'], ENT_QUOTES) : ''; ?>"
+                    aria-describedby="email">
                 <?php if (isset($validator) && $validator->fails() && isset($validator->errors()['email'])) { ?>
                     <?php foreach ($validator->errors()['email'] as $error) { ?>
                         <small class="form-text text-muted"><?php echo $error; ?></small>
@@ -83,8 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label for="email_confirm">Email Confirmation</label>
-                <input type="text" class="form-control" id="email_confirm" name="email_confirm"
-                    aria-describedby="email_confirm">
+                <input type="text" class="form-control" id="email_confirm"
+                    value="<?php echo isset($_POST['email_confirm']) ? htmlspecialchars($_POST['email_confirm'], ENT_QUOTES) : ''; ?>"
+                    name="email_confirm" aria-describedby="email_confirm">
                 <?php if (isset($validator) && $validator->fails() && isset($validator->errors()['email_confirm'])) { ?>
                     <?php foreach ($validator->errors()['email_confirm'] as $error) { ?>
                         <small class="form-text text-muted"><?php echo $error; ?></small>
@@ -93,7 +104,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label for="age">Age</label>
-                <input type="text" class="form-control" id="age" name="age" aria-describedby="age">
+                <input type="text" class="form-control" id="age" name="age"
+                    value="<?php echo isset($_POST['age']) ? htmlspecialchars($_POST['age'], ENT_QUOTES) : ''; ?>"
+                    aria-describedby="age">
                 <?php if (isset($validator) && $validator->fails() && isset($validator->errors()['age'])) { ?>
                     <?php foreach ($validator->errors()['age'] as $error) { ?>
                         <small class="form-text text-muted"><?php echo $error; ?></small>
@@ -101,8 +114,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php } ?>
             </div>
             <div class="form-group">
-                <label for="exampleInputPassword1">Password</label>
-                <input type="password" class="form-control" id="exampleInputPassword1" name="password">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password">
+                <?php if (isset($validator) && $validator->fails() && isset($validator->errors()['password'])) { ?>
+                    <?php foreach ($validator->errors()['password'] as $error) { ?>
+                        <small class="form-text text-muted"><?php echo $error; ?></small>
+                    <?php } ?>
+                <?php } ?>
+            </div>
+            <div class="form-group">
+                <label for="password_confirm">Password Confirm</label>
+                <input type="password_confirm" class="form-control" id="password_confirm" name="password_confirm">
+                <?php if (isset($validator->errors()['password_confirm'])): ?>
+                    <small id="passwordConfirmHelp"
+                        class="form-text text-muted"><?= $validator->errors()['password_confirm'][0]; ?></small>
+                <?php endif; ?>
             </div>
             <div class="form-group">
                 <label for="gender">Select Gender:</label>
