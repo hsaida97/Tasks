@@ -4,7 +4,7 @@ $user = $user->where('id','=',$id)->delete();
 
 if($user){ ?>
 <script>
-    window.location.href = "http://cargosoft.test/template/templatesaa/app.php?page=user";
+    window.location.href = "http://localhost/Admin%20panel/?page=user";
 </script>
 <?php 
 }

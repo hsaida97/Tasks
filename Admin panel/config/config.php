@@ -13,7 +13,7 @@ $projectPath = end($projectPath);
 $fullPath = $protocol.'://'.$host.'/'.$projectPath;
 
 define('SITE',$fullPath);
-define('DB_NAME','databasename');
+define('DB_NAME','mydatabase');
 define('DB_PASS','');
 define('DB_USER','root');
 define('DB_HOST','localhost');
