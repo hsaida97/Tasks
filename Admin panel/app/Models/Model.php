@@ -156,24 +156,26 @@ abstract class Model
         return 0;
     }
 
-    public function create($data){
-        $mainSql = "INSERT INTO  $this->table  SET ";
+    public function create($data) {
+        $mainSql = "INSERT INTO $this->table SET ";
         $dataTokens = array_keys($data);
         $tokens = [];
         $executeData = [];
-        foreach($dataTokens as $value){
-            $tokenVal = ":$value".$this->guidv4();
-            $tokens[] = "$value = $value";
-            $executeData[$tokenVal]= $data[$value];
+    
+        foreach ($dataTokens as $value) {
+            $tokenVal = ":$value" . $this->guidv4();
+            $tokens[] = "$value = $tokenVal";
+            $executeData[$tokenVal] = $data[$value];
         }
-        $mainSql.=implode(',',$tokens);
+    
+        $mainSql .= implode(',', $tokens);
         $run = $this->dbConnection->prepare($mainSql);
-        $run->execute($data);
+        $run->execute($executeData);
+    
         if ($run->rowCount() > 0) {
             return 1;
         }
         return 0;
-
     }
 
 
